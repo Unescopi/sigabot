@@ -1,0 +1,11 @@
+{
+  "name": "bot-transito",
+  "version": "1.0.0",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "dotenv": "^10.0.0",
+    "axios": "^0.24.0",
+    "sqlite3": "^5.0.2"
+  }
+} 
