@@ -133,6 +133,15 @@ def webhook():
             "error": str(e)
         }), 500
 
+@app.route('/test', methods=['GET'])
+def test():
+    logger.info("Endpoint de teste acessado")
+    return jsonify({
+        "status": "ok",
+        "message": "Endpoint de teste funcionando",
+        "env_test": os.getenv('GROUP_TEST_ID')
+    })
+
 def start_server():
     """Inicia o servidor com Waitress"""
     try:
