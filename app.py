@@ -48,9 +48,7 @@ def home():
 def webhook():
     try:
         data = request.json
-        logger.info("\n=== NOVA REQUISIÇÃO RECEBIDA ===")
-        logger.info(f"Headers: {dict(request.headers)}")
-        logger.info(f"Dados completos: {data}")
+        logger.info("Nova requisição recebida")
         
         if data.get('event') == 'messages.upsert':
             message_data = data.get('data', {})
@@ -116,8 +114,8 @@ def webhook():
         return jsonify({"status": True}), 200
         
     except Exception as e:
-        logger.error(f"Erro no webhook: {str(e)}")
-        return jsonify({"status": False, "error": str(e)}), 500
+        logger.error(f"Erro: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/test', methods=['GET'])
 def test():
