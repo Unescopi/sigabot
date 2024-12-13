@@ -6,6 +6,7 @@ import requests
 from waitress import serve
 from dotenv import load_dotenv
 from services.database import Database
+import sys
 
 # Carrega as variáveis de ambiente
 load_dotenv()
@@ -16,6 +17,12 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+# No início do arquivo, após as importações
+logger.info("=== INICIANDO SERVIDOR ===")
+logger.info(f"Versão do Python: {sys.version}")
+logger.info(f"Diretório atual: {os.getcwd()}")
+logger.info(f"Variáveis de ambiente carregadas: {list(os.environ.keys())}")
 
 # Inicializar conexão com banco de dados
 db = Database()
