@@ -1,11 +1,13 @@
-FROM python:3.9-slim
+FROM node:16-slim
 
 WORKDIR /app
-COPY . .
 
-RUN pip install -r requirements.txt
+COPY package*.json ./
+RUN npm install
+
+COPY . .
 
 ENV PORT=80
 EXPOSE 80
 
-CMD ["python", "app.py"] 
+CMD ["npm", "start"] 

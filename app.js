@@ -1,33 +1,39 @@
 require('dotenv').config();
 const express = require('express');
-const axios = require('axios');
-const sqlite3 = require('sqlite3').verbose();
+const db = require('./src/database');
+const whatsapp = require('./src/whatsapp');
 const app = express();
-
-// Configuração do banco
-const db = new sqlite3.Database('/app/data/status.db');
-db.run(`CREATE TABLE IF NOT EXISTS status_history (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    lado TEXT NOT NULL,
-    status TEXT NOT NULL,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-)`);
 
 // Middleware
 app.use(express.json());
+
+// Rota de teste
+app.get('/', (req, res) => {
+    res.json({
+        status: 'online',
+        message: 'Bot está funcionando!'
+    });
+});
+
+// Rota de teste com variáveis
+app.get('/test', (req, res) => {
+    res.json({
+        status: 'ok',
+        message: 'Endpoint de teste funcionando',
+        env_test: process.env.GROUP_TEST_ID
+    });
+});
 
 // Webhook
 app.post('/webhook', async (req, res) => {
     try {
         const data = req.body;
-        console.log('Webhook recebido');
+        console.log('Webhook recebido:', data);
 
-        if (data.event === 'messages.upsert') {
+        if (data?.event === 'messages.upsert') {
             const message = data.data || {};
             const groupId = message.key?.remoteJid;
             const text = message.message?.conversation;
-
-            console.log(`Mensagem recebida: ${text}`);
 
             if (text && [process.env.GROUP_ID, process.env.GROUP_TEST_ID].includes(groupId)) {
                 if (text.toLowerCase().includes('fechado')) {
@@ -35,22 +41,22 @@ app.post('/webhook', async (req, res) => {
                     const outro = lado === 'Goioerê' ? 'Quarto Centenário' : 'Goioerê';
 
                     // Atualiza status
-                    db.run('INSERT INTO status_history (lado, status) VALUES (?, ?)', [lado, 'FECHADO']);
-                    db.run('INSERT INTO status_history (lado, status) VALUES (?, ?)', [outro, 'LIBERADO']);
+                    await db.updateStatus(lado, 'FECHADO');
+                    await db.updateStatus(outro, 'LIBERADO');
 
                     // Envia mensagem
                     const msg = `⚠️ ATENÇÃO ⚠️\n\n🔴 ${lado}: FECHADO\n🟢 ${outro}: LIBERADO`;
-                    await axios.post(
-                        `${process.env.SERVER_URL}/message/sendText/${process.env.INSTANCE}`,
-                        {
-                            number: groupId,
-                            text: msg
-                        },
-                        {
-                            headers: { apikey: process.env.APIKEY }
-                        }
-                    );
+                    await whatsapp.sendMessage(groupId, msg);
                     console.log('Mensagem enviada');
+                }
+                
+                // Comando de status
+                if (text.toLowerCase().includes('status')) {
+                    const goioere = await db.getLastStatus('Goioerê');
+                    const quarto = await db.getLastStatus('Quarto Centenário');
+                    
+                    const msg = `📊 Status Atual:\n\n${goioere === 'FECHADO' ? '🔴' : '🟢'} Goioerê: ${goioere}\n${quarto === 'FECHADO' ? '🔴' : '🟢'} Quarto Centenário: ${quarto}`;
+                    await whatsapp.sendMessage(groupId, msg);
                 }
             }
         }
