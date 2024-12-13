@@ -143,10 +143,8 @@ def test():
     })
 
 def start_server():
-    """Inicia o servidor com Waitress"""
     try:
-        # Usar porta 80 por padrão
-        port = int(os.getenv('PORT', 80))
+        port = int(os.getenv('PORT', 80))  # Porta 80 para HTTP
         logger.info(f"=== INICIANDO SERVIDOR NA PORTA {port} ===")
         serve(app, host='0.0.0.0', port=port)
     except Exception as e:

@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 class Database:
     def __init__(self):
-        self.db_file = "status.db"
+        self.db_file = "/app/data/status.db"
         self._create_tables()
     
     def _create_tables(self):
