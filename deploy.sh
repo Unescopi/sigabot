@@ -7,6 +7,8 @@ SERVICE_NAME="seu-servico"
 
 # Deploy
 echo "Iniciando deploy..."
+git add .
+git commit -m "Update files"
 git push
 
 ssh $SERVER << EOF

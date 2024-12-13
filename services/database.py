@@ -10,21 +10,17 @@ class Database:
         self._create_tables()
     
     def _create_tables(self):
-        try:
-            with sqlite3.connect(self.db_file) as conn:
-                cursor = conn.cursor()
-                cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS status_history (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        lado TEXT NOT NULL,
-                        status TEXT NOT NULL,
-                        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-                    )
-                """)
-                conn.commit()
-        except Exception as e:
-            logger.error(f"Erro ao criar tabelas: {str(e)}")
-            raise
+        with sqlite3.connect(self.db_file) as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS status_history (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    lado TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            conn.commit()
     
     def atualizar_status(self, lado, status):
         try:
