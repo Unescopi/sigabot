@@ -6,7 +6,8 @@ COPY . .
 RUN pip install -r requirements.txt
 
 ENV PORT=80
+ENV PYTHONUNBUFFERED=1
 
 EXPOSE 80
 
-CMD ["python", "app.py"] 
+CMD ["python", "-u", "app.py"] 
