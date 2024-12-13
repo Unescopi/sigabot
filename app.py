@@ -66,7 +66,7 @@ def webhook():
                 sender = message_data.get('pushName')
                 group_id = message_data.get('key', {}).get('remoteJid')
                 
-                if text and group_id == os.getenv('GROUP_ID'):
+                if text and (group_id == os.getenv('GROUP_ID') or group_id == os.getenv('GROUP_TEST_ID')):
                     # Processar comandos de status
                     if "fechado" in text.lower():
                         lado = "Goioerê" if "goioerê" in text.lower() else "Quarto Centenário"
