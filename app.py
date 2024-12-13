@@ -11,15 +11,17 @@ import sys
 # Carrega as variáveis de ambiente
 load_dotenv()
 
-# Configuração de logs
+# Configuração de logs mais simples
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(sys.stdout)
-    ]
+    format='%(message)s',
+    stream=sys.stdout,
+    force=True
 )
-logger = logging.getLogger(__name__)
+
+# Adicionar um log de teste na inicialização
+print("=== INICIANDO BOT ===")  # Usar print direto
+sys.stdout.flush()  # Forçar flush do stdout
 
 # No início do arquivo, após as importações
 logger.info("=== INICIANDO SERVIDOR ===")
