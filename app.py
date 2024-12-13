@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 import os
 import logging
-from services.evolution_service import process_message
 import requests
 from waitress import serve
 from dotenv import load_dotenv
@@ -13,7 +12,7 @@ load_dotenv()
 app = Flask(__name__)
 db = Database()
 
-# Configuração básica de logs
+# Configuração de logs
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(message)s',
@@ -21,12 +20,23 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Rota webhook simplificada
+def send_message(group_id, text):
+    try:
+        url = f"{os.getenv('SERVER_URL')}/message/sendText/{os.getenv('INSTANCE')}"
+        payload = {"number": group_id, "text": text}
+        headers = {"apikey": os.getenv('APIKEY')}
+        response = requests.post(url, json=payload, headers=headers)
+        return response.ok
+    except Exception as e:
+        logger.error(f"Erro ao enviar mensagem: {e}")
+        return False
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     try:
         data = request.json
-        logger.info("Webhook recebido")  # Log aqui
+        logger.info("Webhook recebido")
+        
         if not data:
             return jsonify({"status": True}), 200
             
@@ -35,7 +45,7 @@ def webhook():
             group_id = message.get('key', {}).get('remoteJid')
             text = message.get('message', {}).get('conversation')
             
-            logger.info(f"Mensagem recebida: {text}")  # Log aqui
+            logger.info(f"Mensagem recebida: {text}")
             
             if text and group_id in [os.getenv('GROUP_ID'), os.getenv('GROUP_TEST_ID')]:
                 if "fechado" in text.lower():
@@ -44,22 +54,15 @@ def webhook():
                     outro = "Goioerê" if lado == "Quarto Centenário" else "Quarto Centenário"
                     db.atualizar_status(outro, "LIBERADO")
                     
-                    logger.info(f"Status atualizado: {lado}=FECHADO, {outro}=LIBERADO")  # Log aqui
-                    
                     msg = f"⚠️ ATENÇÃO ⚠️\n\n🔴 {lado}: FECHADO\n🟢 {outro}: LIBERADO"
-                    requests.post(
-                        f"{os.getenv('SERVER_URL')}/message/sendText/{os.getenv('INSTANCE')}",
-                        json={"number": group_id, "text": msg},
-                        headers={"apikey": os.getenv('APIKEY')}
-                    )
-                    logger.info("Mensagem enviada")  # Log aqui
+                    send_message(group_id, msg)
+                    logger.info("Mensagem enviada")
         
         return jsonify({"status": True}), 200
     except Exception as e:
-        logger.error(f"Erro: {str(e)}")  # Log aqui
-        return jsonify({"status": False}), 500
+        logger.error(f"Erro: {e}")
+        return jsonify({"error": str(e)}), 500
 
-# Inicialização simples
 if __name__ == '__main__':
     logger.info("=== INICIANDO SERVIDOR ===")
     serve(app, host='0.0.0.0', port=int(os.getenv('PORT', 80))) 
