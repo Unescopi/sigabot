@@ -18,12 +18,13 @@ logging.basicConfig(
     stream=sys.stdout,
     force=True
 )
+logger = logging.getLogger(__name__)
 
 # Adicionar um log de teste na inicialização
-print("=== INICIANDO BOT ===")  # Usar print direto
-sys.stdout.flush()  # Forçar flush do stdout
+print("=== INICIANDO BOT ===")
+sys.stdout.flush()
 
-# No início do arquivo, após as importações
+# Logs iniciais
 logger.info("=== INICIANDO SERVIDOR ===")
 logger.info(f"Versão do Python: {sys.version}")
 logger.info(f"Diretório atual: {os.getcwd()}")
