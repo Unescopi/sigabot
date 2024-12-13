@@ -1,17 +1,12 @@
-FROM python:3.9
+FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
 COPY . .
+RUN pip install -r requirements.txt
 
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONIOENCODING=utf-8
 ENV PORT=80
 
 EXPOSE 80
 
-CMD ["python", "-u", "app.py"] 
+CMD ["python", "app.py"] 
