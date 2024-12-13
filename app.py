@@ -45,17 +45,21 @@ def home():
 def webhook():
     try:
         data = request.json
-        logger.info("=== NOVA REQUISIÇÃO RECEBIDA ===")
+        logger.info("\n=== NOVA REQUISIÇÃO RECEBIDA ===")
         logger.info(f"Headers: {dict(request.headers)}")
-        logger.info(f"Dados: {data}")
-        logger.info("================================")
-
-        # Verifica se é uma mensagem do tipo messages.upsert
+        logger.info(f"Dados completos: {data}")
+        
+        # Verificar se é mensagem e de qual grupo
         if data.get('event') == 'messages.upsert':
             message_data = data.get('data', {})
+            group_id = message_data.get('key', {}).get('remoteJid')
+            logger.info(f"\n=== DADOS DO GRUPO ===")
+            logger.info(f"ID do Grupo Recebido: {group_id}")
+            logger.info(f"ID do Grupo Configurado: {os.getenv('GROUP_TEST_ID')}")
+            logger.info(f"São iguais? {group_id == os.getenv('GROUP_TEST_ID')}")
             
             # Log detalhado da mensagem
-            logger.info("=== DADOS DA MENSAGEM ===")
+            logger.info("\n=== DADOS DA MENSAGEM ===")
             logger.info(f"Tipo: {message_data.get('messageType')}")
             logger.info(f"Texto: {message_data.get('message', {}).get('conversation')}")
             logger.info(f"Remetente: {message_data.get('pushName')}")
