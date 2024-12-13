@@ -129,8 +129,9 @@ def webhook():
 def start_server():
     """Inicia o servidor com Waitress"""
     try:
-        port = int(os.getenv('PORT', 80))
-        logger.info(f"Iniciando servidor na porta {port}")
+        # Usar a porta do ambiente ou 3000 como padrão
+        port = int(os.getenv('PORT', 3000))
+        logger.info(f"=== INICIANDO SERVIDOR NA PORTA {port} ===")
         serve(app, host='0.0.0.0', port=port)
     except Exception as e:
         logger.error(f"Erro ao iniciar servidor: {e}")
