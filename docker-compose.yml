@@ -1,0 +1,15 @@
+version: '3'
+services:
+  traffic-bot:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - API_URL=${API_URL}
+      - API_KEY=${API_KEY}
+      - INSTANCE_NAME=${INSTANCE_NAME}
+      - GROUP_ID=${GROUP_ID}
+      - MAPS_URL=${MAPS_URL}
+    volumes:
+      - ./traffic.db:/app/traffic.db
+    restart: always 

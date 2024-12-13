@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+
+# Ambiente
+.env
+*.db
+status.db
+
+# Logs
+*.log 

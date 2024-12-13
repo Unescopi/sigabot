@@ -1,0 +1,14 @@
+name: Deploy Bot
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Easypanel Deploy
+        run: |
+          curl -X POST "http://138.128.247.160:3000/api/deploy/9a5038798a9d79328594e984fe69be72f6cf3884ecb64deb" 
